@@ -36,7 +36,7 @@ export default function CartItems({items, isEditable}: CartItemsProps) {
         {items.map((cartItem: CartItem) => (
           <ListItem className={classes.listItem} key={cartItem.product.id}>
             {isEditable && <AddProductToCart product={cartItem.product}/>}
-            <ListItemText primary={cartItem.product.title} secondary={cartItem.product.description}/>
+            <ListItemText primary={cartItem.product.title} secondary={cartItem.product.artists.join(', ')}/>
             <Typography
               variant="body2">{formatAsPrice(cartItem.product.price)} x {cartItem.count} = {formatAsPrice(cartItem.product.price * cartItem.count)}</Typography>
           </ListItem>
@@ -44,7 +44,10 @@ export default function CartItems({items, isEditable}: CartItemsProps) {
         <ListItem className={classes.listItem}>
           <ListItemText primary="Shipping"/>
           <Typography
-            variant="body2">Free</Typography>
+            variant="body2"
+          >
+            Free
+          </Typography>
         </ListItem>
         <ListItem className={classes.listItem}>
           <ListItemText primary="Total"/>
