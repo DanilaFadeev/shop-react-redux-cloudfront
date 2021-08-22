@@ -17,26 +17,28 @@ export default function AddProductToCart({product}: AddProductToCartProps) {
   const cartItems = useSelector(selectCartItems);
   const cartItem = cartItems.find(i => i.product.id === product.id);
 
+  const withoutPropagation = (cb: () => void) => (e: any) => { e.stopPropagation(); cb(); };
+
   return (
     <>
     {
       cartItem ?
         (
           <>
-            <IconButton onClick={() => dispatch(removeFromCart(product))}>
+            <IconButton onClick={withoutPropagation(() => dispatch(removeFromCart(product)))}>
               <Remove color={"secondary"}/>
             </IconButton>
             <Typography align="center">
               {cartItem.count}
             </Typography>
-            <IconButton onClick={() => dispatch(addToCart(product))}>
+            <IconButton onClick={withoutPropagation(() => dispatch(addToCart(product)))}>
               <Add color={"secondary"}/>
             </IconButton>
             </>
         )
         :
         (
-          <IconButton onClick={() => dispatch(addToCart(product))}>
+          <IconButton onClick={withoutPropagation(() => dispatch(addToCart(product)) )}>
             <CartIcon color={"secondary"}/>
           </IconButton>
         )

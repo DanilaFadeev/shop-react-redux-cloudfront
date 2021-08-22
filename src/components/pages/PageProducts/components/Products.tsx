@@ -7,6 +7,7 @@ import CardMedia from '@material-ui/core/CardMedia';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import Chip from '@material-ui/core/Chip';
+import Pagination from '@material-ui/lab/Pagination';
 import {makeStyles} from '@material-ui/core/styles';
 import {Product} from "models/Product";
 import {formatAsPrice} from "utils/utils";
@@ -18,6 +19,7 @@ const useStyles = makeStyles((theme) => ({
   root: {
     display: 'flex',
     justifyContent: 'space-between',
+    height: '100%',
     cursor: 'pointer'
   },
   details: {
@@ -29,7 +31,7 @@ const useStyles = makeStyles((theme) => ({
     flex: '1 0 auto',
   },
   cover: {
-    width: 150,
+    width: '40%',
   },
   controls: {
     display: 'flex',
@@ -44,19 +46,31 @@ const useStyles = makeStyles((theme) => ({
     width: '40vw',
     height: '100%',
     padding: 20
+  },
+  mb10: {
+    marginBottom: 10
   }
 }));
 
 export default function Products() {
   const classes = useStyles();
 
-  const [product, setProduct] = useState<Product>();
+  const productsPerPage = 12;
+
+  const [product, setProduct] = useState<Product | null>(null);
   const [products, setProducts] = useState<Product[]>([]);
-  const [detailsOpen, setDetailsOpen] = React.useState(false);
+  const [detailsOpen, setDetailsOpen] = useState(false);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [totalPages, setTotalPages] = useState<number>(1);
 
   useEffect(() => {
     axios.get(API_PATHS.product)
-      .then(res => setProducts(res.data));
+      .then(({ data }) => {
+        const paginationPages = Math.ceil(data.length / productsPerPage);
+
+        setProducts(data);
+        setTotalPages(paginationPages);
+      });
   }, []);
 
   const onProductSelect = (productId: string) => {
@@ -67,10 +81,17 @@ export default function Products() {
       });
   };
 
+  const displayArtists = (artists: string[]): string => {
+    const label = artists.join(', ');
+    return label.length > 60 ? `${label.slice(0, 60)}...` : label;
+  }
+
   return (
     <Grid container spacing={4}>
-      {products.map((product: Product, index: number) => (
-        <Grid item key={product.id} xs={12} sm={6} lg={4}>
+      {products
+        .slice((currentPage - 1) * productsPerPage, currentPage * productsPerPage)
+        .map((product: Product, index: number) => (
+        <Grid item key={product.id} xs={12} sm={6} md={4}>
            <Card className={classes.root} onClick={() => onProductSelect(product.id)}>
             <div className={classes.details}>
               <CardContent className={classes.content}>
@@ -78,7 +99,7 @@ export default function Products() {
                   {product.title}
                 </Typography>
                 <Typography variant="subtitle1" color="textSecondary">
-                  {product.artists.join(', ')}
+                  {displayArtists(product.artists)}
                 </Typography>
               </CardContent>
               <div className={classes.controls}>
@@ -96,27 +117,30 @@ export default function Products() {
           </Card>
         </Grid>
       ))}
+      <Pagination count={totalPages} size="large" onChange={(_, page) => setCurrentPage(page)} />
       <Drawer anchor={'right'} open={detailsOpen} onClose={() => setDetailsOpen(false)}>
         {product && (<Grid className={classes.productContainer} container>
-          <Grid container>
-            <Grid item>
+          <div>
+            <div className={classes.mb10}>
               <Typography variant="h4" gutterBottom>
                 {product.title}
               </Typography>
-            </Grid>
-            <Grid item>
-              {product.artists.join(', ')}
-            </Grid>
-            <Grid item>
+            </div>
+            <div className={classes.mb10}>
+              <Typography variant="subtitle1" color="textSecondary">
+                {product.artists.join(', ')}
+              </Typography>
+            </div>
+            <div className={classes.mb10}>
               <Chip label={product.genre} variant="outlined" />
-            </Grid>
-            <Grid item>
               <Chip label={product.type} variant="outlined" />
-            </Grid>
-            <Grid item><img src={product.coverUri} alt={product.title} /></Grid>
-            <Grid item>{product.lyrics}</Grid>
-            <Grid item>{product.releaseDate}</Grid>
-          </Grid>
+            </div>
+            <div className={classes.mb10}>
+              <img src={product.coverUri} alt={product.title} />
+            </div>
+            <div className={classes.mb10}>{product.lyrics}</div>
+            <div className={classes.mb10}>{product.releaseDate}</div>
+          </div>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <Grid item style={{ flex: 2 }}>
               <Typography>
