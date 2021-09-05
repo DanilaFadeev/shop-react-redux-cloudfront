@@ -5,6 +5,7 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
 import AccountCircle from '@material-ui/icons/AccountCircle';
+import LibraryMusic from '@material-ui/icons/LibraryMusic';
 import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
 import Cart from "components/MainLayout/components/Cart";
@@ -19,11 +20,14 @@ const useStyles = makeStyles((theme: Theme) =>
       marginRight: theme.spacing(2),
     },
     title: {
-      flexGrow: 1,
+      display: 'flex',
+      alignItems: 'center',
+      flexGrow: 1
     },
     homeLink: {
       color: 'white',
-      textDecoration: 'none'
+      textDecoration: 'none',
+      marginLeft: 7
     }
   }),
 );
@@ -46,7 +50,7 @@ export default function Header() {
     <AppBar position="relative">
       <Toolbar>
         <Typography variant="h6" className={classes.title}>
-          <Link className={classes.homeLink} to="/">My Store!</Link>
+          <LibraryMusic /> <Link className={classes.homeLink} to="/">Serverless Music</Link>
         </Typography>
 
         {auth && (
