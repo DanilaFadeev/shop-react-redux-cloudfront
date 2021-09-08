@@ -1,6 +1,7 @@
 import React from 'react';
 import Typography from '@material-ui/core/Typography';
 import {Product} from "models/Product";
+import {Stock} from "models/Stock";
 import CartIcon from "@material-ui/icons/ShoppingCart";
 import Add from "@material-ui/icons/Add";
 import Remove from "@material-ui/icons/Remove";
@@ -9,7 +10,7 @@ import {useDispatch, useSelector} from "react-redux";
 import {addToCart, selectCartItems, removeFromCart} from "store/cartSlice";
 
 type AddProductToCartProps = {
-  product: Product
+  product: Product & Stock
 };
 
 export default function AddProductToCart({product}: AddProductToCartProps) {

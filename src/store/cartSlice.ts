@@ -1,6 +1,7 @@
 import {createSlice, PayloadAction} from '@reduxjs/toolkit';
 import {RootState} from 'store/store';
 import {Product} from "models/Product";
+import { Stock } from 'models/Stock';
 import {CartItem} from "models/CartItem";
 import API_PATHS from "../constants/apiPaths";
 import axios from 'axios';
@@ -25,15 +26,19 @@ export const cartSlice = createSlice({
       }
     },
     // Use the PayloadAction type to declare the contents of `action.payload`
-    addToCart: (state, action: PayloadAction<Product>) => {
+    addToCart: (state, action: PayloadAction<Product & Stock>) => {
       const {items} = state;
       const {payload: product} = action;
       const existingItem = items.find(i => i.product.id === product.id);
       if (existingItem) {
+        if (existingItem.count >= product.count) {
+          return;
+        }
+
         existingItem.count++;
         return;
       }
-      items.push({product, count: 1});
+      items.push({ product, count: 1 });
     },
     // Use the PayloadAction type to declare the contents of `action.payload`
     removeFromCart: (state, action: PayloadAction<Product>) => {
@@ -53,7 +58,7 @@ export const cartSlice = createSlice({
   },
 });
 
-export const addToCart = (product: Product) => async (dispatch: any, getState: any) => {
+export const addToCart = (product: Product & Stock) => async (dispatch: any, getState: any) => {
   dispatch(cartSlice.actions.addToCart(product));
   const { cart: { items } } = getState();
   await axios.put(`${API_PATHS.cart}/profile/cart`, { items }, {
@@ -63,7 +68,7 @@ export const addToCart = (product: Product) => async (dispatch: any, getState: a
   })
 };
 
-export const removeFromCart = (product: Product) => async (dispatch: any, getState: any) => {
+export const removeFromCart = (product: Product & Stock) => async (dispatch: any, getState: any) => {
   dispatch(cartSlice.actions.removeFromCart(product));
   const { cart: { items } } = getState();
   await axios.put(`${API_PATHS.cart}/profile/cart`, { items }, {
