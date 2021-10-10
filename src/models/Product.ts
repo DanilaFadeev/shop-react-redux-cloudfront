@@ -10,7 +10,7 @@ export type Product = {
   title: string;
   type: ProductType;
   artists: string[];
-  coverUri: string;
+  coveruri: string;
   duration: number;
   price: number;
   discount: number;
