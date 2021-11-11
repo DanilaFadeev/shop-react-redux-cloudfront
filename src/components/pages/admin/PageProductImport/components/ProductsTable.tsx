@@ -10,13 +10,14 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import Button from "@material-ui/core/Button";
+import Chip from '@material-ui/core/Chip';
 import {formatAsPrice} from "utils/utils";
 
 export default function ProductsTable() {
   const [products, setProducts] = useState<any>([]);
 
   useEffect(() => {
-    axios.get(`${API_PATHS.bff}/product`)
+    axios.get(`${API_PATHS.bff}/products`)
       .then(res => setProducts(res.data));
   }, []);
 
@@ -36,7 +37,8 @@ export default function ProductsTable() {
         <TableHead>
           <TableRow>
             <TableCell>Title</TableCell>
-            <TableCell align="right">Description</TableCell>
+            <TableCell>Type</TableCell>
+            <TableCell align="right">Artist(s)</TableCell>
             <TableCell align="right">Price</TableCell>
             <TableCell align="right">Count</TableCell>
             <TableCell align="right">Action</TableCell>
@@ -48,7 +50,10 @@ export default function ProductsTable() {
               <TableCell component="th" scope="row">
                 {product.title}
               </TableCell>
-              <TableCell align="right">{product.description}</TableCell>
+							<TableCell>
+								<Chip label={product.type} color="secondary" />
+							</TableCell>
+              <TableCell align="right">{product.artists}</TableCell>
               <TableCell align="right">{formatAsPrice(product.price)}</TableCell>
               <TableCell align="right">{product.count}</TableCell>
               <TableCell align="right">
